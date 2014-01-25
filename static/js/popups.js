@@ -27,7 +27,7 @@ jQuery.blankScreen = function(settings)
       'right': '0',
       'bottom': '0',
       'left': '0',
-      'z-index': '1000',
+      'z-index': float_windows ? zc['n'] + 1 : '1000',
       'position': 'fixed',
       'background-color': blank_screen.color,
       'opacity': blank_screen.opacity,
@@ -42,6 +42,7 @@ jQuery.blankScreen = function(settings)
 jQuery.fn.showPopup = function(settings)
 {
   var popup = this.eq(0);
+  console.log('this is a popup');
 
   var pop = {
     blank_screen: true,
@@ -84,7 +85,7 @@ jQuery.fn.showPopup = function(settings)
 
   popup.css({
     'position': 'absolute',
-    'z-index': '1001',
+    'z-index': float_windows ? zc['d']++ : '1001',
     'left': Math.ceil((jQuery("body").eq(0).width() / 2) - (popup.width() / 2))
   });
   popup.centerVertically();
