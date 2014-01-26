@@ -1,4 +1,3 @@
-var float_windows = true;
 $(document).ready(function() {
   // helper functions
   var settings_buttons = '<div class="module_settings"><span>Settings</span></div><div class="module_remove"><span>Remove</span></div>';
@@ -369,6 +368,10 @@ $(document).ready(function() {
 
   if ($('body').data('show_currently_playing') === 'True') {
     get_currently_playing();
+  }
+
+  if ($('body').data('float_windows') === 'True') {
+	  init_float();
   }
 
   // currently_playing controls

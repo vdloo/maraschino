@@ -42,7 +42,6 @@ jQuery.blankScreen = function(settings)
 jQuery.fn.showPopup = function(settings)
 {
   var popup = this.eq(0);
-  console.log('this is a popup');
 
   var pop = {
     blank_screen: true,

@@ -123,6 +123,11 @@ def index():
     else:
         show_currently_playing = int(get_setting_value('show_currently_playing')) > 0
 
+    if get_setting_value('float_windows') == None:
+        float_windows = False
+    else:
+        float_windows = int(get_setting_value('float_windows')) > 0
+
     return render_template('index.html',
         modules=modules,
         num_columns=num_columns,
@@ -142,7 +147,8 @@ def index():
         kiosk=maraschino.KIOSK,
         new_tab=new_tab,
         title_color=get_setting_value('title_color'),
-        remote_inactivity_enable=get_setting_value('remote_inactivity_enable')
+        remote_inactivity_enable=get_setting_value('remote_inactivity_enable'),
+	float_windows=float_windows
     )
 
 @app.route('/xhr/shutdown')

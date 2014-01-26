@@ -761,6 +761,16 @@ MISC_SETTINGS = [
         'value': 'EEE',
         'description': 'Module title color (hexadecimal)',
     },
+    {
+        'key': 'float_windows',
+        'value': '1',
+        'description': 'Float windows',
+        'type': 'select',
+        'options': [
+            {'value': '0', 'label': 'No'},
+            {'value': '1', 'label': 'Yes'},
+        ]
+    }
 ]
 
 SERVER_SETTINGS = [

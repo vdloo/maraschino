@@ -1,10 +1,10 @@
+var float_windows;
 var ec = 0;
 var dc = 0;
 var zc = { n : 1000, d : 2000 };
 var store_pos = [];
 var prop;
-
-function get_ec(el) {
+function get_ec(el, tp) {
 	var flid = el.attr('flid');
 	var cur_ec = false;
 	var el_index;
@@ -13,7 +13,8 @@ function get_ec(el) {
 			cur_ec = store_pos[el_index]['identifier'] == flid ? flid : false;
 		}
 	}
-	cur_ec = cur_ec ? cur_ec : ++dc;
+	cur_ec = cur_ec || tp ? cur_ec : ++dc;
+
 	if (el.attr('flid') === 'undefined') {
 		el.attr('flid', cur_ec);
 		store_pos[cur_ec]['identifier'] = cur_ec;
@@ -21,19 +22,37 @@ function get_ec(el) {
 	return cur_ec;
 }
 
-function start_float() {
-	$('body').css('overflow', 'hidden');
+function make_resizable(){
+	$('ul.modules>li, .dialog').hover(function(){
+		convert_windows();
+		$(this).find('h2').css('cursor', 'move');
+		var res = $(this).children('div');
+		if (!res.hasClass('ui-resizable')){
+			fdiv = $('>div:not(.placeholder)', $(this));
+			prop.dw = fdiv.width(),
+			prop.dh = fdiv.height()
+			var cur_ec = get_ec($(this), true);
+			if (!cur_ec) return;
+			store_pos[cur_ec]['w'] = store_pos[cur_ec]['w'] ? store_pos[cur_ec]['w'] : prop.dw;
+			store_pos[cur_ec]['h'] = store_pos[cur_ec]['h'] ? store_pos[cur_ec]['h'] : prop.dh;
+			res.resizable({ ghost: true });
+		}
+	});
+}
+
+function convert_windows(){
 
 	// convert the current windows to absolute positioning
 	
-	$($('ul.modules>li, .dialog').get().reverse()).each(function(){
+	$($('ul.modules>li:not(.float):not(.float_placeholder), .dialog').get().reverse()).each(function(){
 		el = $(this);
+		if ($('>div', el).hasClass('initialised')) return;
 		cur_ec = ++dc;
 		prop = {
 			x : el.offset().left,
 			y : el.offset().top,
-			w : el.width(),
-			h : el.height(),
+			w : el.width() + 1,
+			h : el.height() + 1,
 		}
 
 		// store original position of windows for animation
@@ -45,10 +64,16 @@ function start_float() {
 		store_pos[cur_ec]['t'] = store_pos[cur_ec]['t'] ? store_pos[cur_ec]['t'] : prop.y;
 
 		if (el.attr('flid') !== 'undefined') el.attr('flid', cur_ec);
-		el.css({width: prop.w, height: prop.h, left: prop.x, top: prop.y, position:'absolute'});
-		console.log(el.find('h2'));
+		el.after($('<li></li>').addClass('float_placeholder').css({ height: el.outerHeight( true ) + 50 }));
+//		setTimeout((function (el) {
+			el.css({width: prop.w, height: prop.h, left: prop.x, top: prop.y, position:'absolute'});
+			el.addClass('float');
+//		})(el), 500);
 	});
-	$('h2').css('cursor', 'move');
+}
+
+function start_float() {
+	$('body').css('overflow', 'hidden');
 
 	// calculations and handlers for moving the windows around
 
@@ -106,22 +131,6 @@ function start_float() {
 	make_resizable();
 }
 
-function make_resizable(){
-	$('ul.modules>li, .dialog').hover(function(){
-		$(this).find('h2').css('cursor', 'move');
-		var res = $(this).children('div');
-		if (!res.hasClass('ui-resizable')){
-			fdiv = $('>div:not(.placeholder)', $(this));
-			prop.dw = fdiv.width(),
-			prop.dh = fdiv.height()
-			var cur_ec = get_ec($(this));
-			store_pos[cur_ec]['w'] = store_pos[cur_ec]['w'] ? store_pos[cur_ec]['w'] : prop.dw;
-			store_pos[cur_ec]['h'] = store_pos[cur_ec]['h'] ? store_pos[cur_ec]['h'] : prop.dh;
-			res.resizable();
-		}
-	});
-}
-
 function stop_float() {
 	
 	// put the windows back in docked position
@@ -133,13 +142,14 @@ function stop_float() {
 		var restore_relative = function(el, cbi){
 			return function(){
 				el.replaceWith(store_pos[cbi]['static']);
+				$('.add_module, div[id^=add_]').show();
 			}
 		}(el, el_index);
 		$('>div:not(.placeholder)', el).animate({
 			width: store_pos[el_index]['w'],
 			height: store_pos[el_index]['h']
 		},{
-			duration : 500,
+			duration : 100,
 			queue : false
 		});
 		el.animate({
@@ -150,22 +160,20 @@ function stop_float() {
 			restore_relative
 		);
 	}
+	$('.float').removeClass('float');
+	$('.float_placeholder').remove();
 	$('ul.modules>li, .dialog').unbind('mousedown').unbind('mouseenter').unbind('mouseleave');
 }
-
-$('#settings_icon').on('click', function(){
-	if ($('body').hasClass('f_operation_mode')){
-		stop_float();
-		var addbuttons = $('.add_module');
-		addbuttons.css('opacity', 0);
-		setTimeout(function() { 
-			addbuttons.animate({opacity:1}, 500);
-		}, 500);
-	}
-	else {
-		setTimeout(function() { 
+function init_float(){
+	float_windows = true;
+	$('#settings_icon').on('click', function(){
+		if ($('body').hasClass('f_operation_mode')){
+			$('.add_module, div[id^=add_]').hide();
+			stop_float();
+		}
+		else {
 			start_float();
-		}, 500);
-	}
-});
-//start_float();
+		}
+	});
+	start_float();
+}
