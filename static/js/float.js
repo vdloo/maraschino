@@ -28,12 +28,15 @@ function start_float() {
 
 		if (el.attr('flid') !== 'undefined') el.attr('flid', cur_ec);
 		el.css({width: prop.w, height: prop.h, left: prop.x, top: prop.y, position:'absolute'});
+		console.log(el.find('h2'));
 	});
+	$('h2').css('cursor', 'move');
 
 	// calculations and handlers for moving the windows around
 
 	$('ul.modules>li, .dialog').bind('mousedown', function(e){
 		if (e.which != 1) return;
+		if (!$(e.target).is('h2')) return;
 		el = $(this);
 
 		var t;
@@ -94,6 +97,10 @@ function start_float() {
 			$(document).unbind('mousemove');
 		});
 	});
+
+	$('ul.modules>li, .dialog').hover(function(){
+		$(this).find('h2').css('cursor', 'move');
+	});
 }
 function stop_float() {
 	
@@ -110,14 +117,20 @@ function stop_float() {
 		}(el, el_index);
 		el.animate({left:store_pos[el_index]['left'], top: store_pos[el_index]['top']}, 'slow', restore_relative);
 	}
-	$('ul.modules>li, .dialog').unbind('mousedown');
+	$('ul.modules>li, .dialog').unbind('mousedown').unbind('mouseenter').unbind('mouseleave');
 }
 
 $('#settings_icon').on('click', function(){
 	if ($('body').hasClass('f_operation_mode')){
 		stop_float();
+		var addbuttons = $('.add_module');
+		addbuttons.css('opacity', 0);
+		setTimeout(function() { 
+			addbuttons.animate({opacity:1}, 500);
+		}, 500);
 	}
 	else {
 		start_float();
 	}
 });
+start_float();
