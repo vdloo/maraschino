@@ -1,11 +1,11 @@
-document.body.style.overflow = 'hidden';
 var ec = 0;
 var dc = 0;
 var zc = { n : 1000, d : 2000 };
 var store_pos = [];
 var prop;
 function start_float() {
-	
+	$('body').css('overflow', 'hidden');
+
 	// convert the current windows to absolute positioning
 	
 	$($('ul.modules>li, .dialog').get().reverse()).each(function(){
@@ -28,6 +28,7 @@ function start_float() {
 
 		if (el.attr('flid') !== 'undefined') el.attr('flid', cur_ec);
 		el.css({width: prop.w, height: prop.h, left: prop.x, top: prop.y, position:'absolute'});
+		el.resizable();
 		console.log(el.find('h2'));
 	});
 	$('h2').css('cursor', 'move');
@@ -103,6 +104,7 @@ function start_float() {
 	});
 }
 function stop_float() {
+	$('body').css('overflow', 'visible');
 	
 	// put the windows back in docked position
 	
